@@ -9,3 +9,11 @@ class TimeFee(gym.Wrapper):
     def step(self, action):
         obs, reward, terminated, truncated, info = self.env.step(action)
         return obs, reward - self.fee, terminated, truncated, info
+class HoverBonus(gym.Wrapper):
+    """+1 per frame while upright and slow. Invites hovering."""
+    def step(self, action):
+        obs, reward, terminated, truncated, info = self.env.step(action)
+        x, y, vx, vy, angle, spin = obs[:6]
+        if abs(angle) < 0.2 and abs(vx) < 0.3 and abs(vy) < 0.3:
+            reward += 1.0
+        return obs, reward, terminated, truncated, info
